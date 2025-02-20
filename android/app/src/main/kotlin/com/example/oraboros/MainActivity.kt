@@ -1,4 +1,4 @@
-package com.example.oraboros
+package com.oraboros.gnoega
 
 import io.flutter.embedding.android.FlutterActivity
 
