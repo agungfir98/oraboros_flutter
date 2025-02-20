@@ -27,15 +27,25 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> sections = [
       {
-        "navItem": const BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
+        "navItem": BottomNavigationBarItem(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          icon: const Icon(Icons.home_outlined),
           label: "Home",
         ),
         "widget": const HomeScreen()
       },
       {
-        "navItem": const BottomNavigationBarItem(
-          icon: Icon(Icons.show_chart_rounded),
+        "navItem": BottomNavigationBarItem(
+          backgroundColor: Colors.blue[500],
+          icon: const Icon(Icons.pie_chart_outline_outlined),
+          label: "budgets",
+        ),
+        "widget": const Text("Budgets")
+      },
+      {
+        "navItem": BottomNavigationBarItem(
+          backgroundColor: Colors.amber[500],
+          icon: const Icon(Icons.show_chart_rounded),
           label: "Statistics",
         ),
         "widget": Scaffold(
@@ -47,8 +57,9 @@ class _DashboardViewState extends State<DashboardView> {
         )
       },
       {
-        "navItem": const BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
+        "navItem": BottomNavigationBarItem(
+          backgroundColor: Colors.red[500],
+          icon: const Icon(Icons.settings_outlined),
           label: "Settings",
         ),
         "widget": SettingsView(controller: widget.settingsController)
@@ -76,6 +87,7 @@ class _DashboardViewState extends State<DashboardView> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(50),
             child: BottomNavigationBar(
+              type: BottomNavigationBarType.shifting,
               backgroundColor: Theme.of(context).colorScheme.primary,
               currentIndex: _currentIndex,
               showUnselectedLabels: false,
