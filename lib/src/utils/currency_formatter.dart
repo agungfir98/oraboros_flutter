@@ -1,6 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+NumberFormat formatting =
+    NumberFormat.simpleCurrency(locale: 'ID', decimalDigits: 0, name: 'Rp ');
+
 class CurrencyInputFormatter extends TextInputFormatter {
   final NumberFormat _formatter = NumberFormat.decimalPattern('en_US');
 
