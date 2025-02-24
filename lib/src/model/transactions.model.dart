@@ -26,6 +26,7 @@ class Transactions {
       'id': id,
       'type': type.name,
       'amount': amount,
+      'category': category,
       'category_id': categoryId,
       'description': description,
       'created_at': createdAt,
