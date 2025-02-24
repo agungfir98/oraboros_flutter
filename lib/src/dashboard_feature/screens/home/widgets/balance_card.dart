@@ -1,16 +1,51 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:oraboros/src/lib/locator.dart';
+import 'package:oraboros/src/service/transaction.service.dart';
+import 'package:oraboros/src/utils/currency_formatter.dart';
 import 'package:oraboros/src/utils/maffs/maff.dart';
 
-class BalanceCard extends StatelessWidget {
+class BalanceCard extends StatefulWidget {
   const BalanceCard({super.key});
+
+  @override
+  State<BalanceCard> createState() => _BalanceCardState();
+}
+
+class _BalanceCardState extends State<BalanceCard> {
+  var transactionService = locator<TransactionService>();
+  Map<String, dynamic> balance = {};
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = true;
+    _fetchBalance();
+  }
+
+  _fetchBalance() async {
+    var data = await transactionService.getBalance();
+    if (kDebugMode) {
+      print(data);
+    }
+    setState(() {
+      balance = data;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: const CardOutlinePainter(strokeWidth: 4),
+      painter: CardOutlinePainter(
+        strokeWidth: 4,
+        color: Theme.of(context).colorScheme.outline,
+      ),
       child: ClipPath(
         clipper: CustomCardClipper(), // Apply custom shape
         child: Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -18,31 +53,26 @@ class BalanceCard extends StatelessWidget {
               topRight: Radius.circular(40),
             ),
           ),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Your Balance is",
-                style: TextStyle(fontSize: 18, color: Colors.black54),
-              ),
-              SizedBox(height: 5),
-              Text(
-                "\$45,934.00",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 5),
-              Row(
-                children: [
-                  Icon(Icons.trending_up, color: Colors.green),
-                  SizedBox(width: 5),
-                  Text(
-                    "8.82% (+\$876)",
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: Builder(builder: (context) {
+            if (isLoading) {
+              return const Text("loading...");
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Your Balance",
+                  style: TextStyle(fontSize: 18, color: Colors.black54),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  formatting.format(balance['balance'] ?? ""),
+                  style: const TextStyle(
+                      fontSize: 30, fontWeight: FontWeight.bold),
+                ),
+              ],
+            );
+          }),
         ),
       ),
     );
@@ -59,9 +89,9 @@ class CustomCardClipper extends CustomClipper<Path> {
     ({double x, double y}) v1 = (x: 0, y: 0);
     ({double x, double y}) v2 = (x: 0, y: size.height);
     ({double x, double y}) v3 = (x: size.width, y: size.height);
-    ({double x, double y}) v4 = (x: size.width, y: size.height * 0.3);
-    ({double x, double y}) v5 = (x: size.width * 0.8, y: size.height * 0.3);
-    ({double x, double y}) v6 = (x: size.width * 0.6, y: 0);
+    ({double x, double y}) v4 = (x: size.width, y: 0 + 50);
+    ({double x, double y}) v5 = (x: size.width - 110, y: 0 + 50);
+    ({double x, double y}) v6 = (x: size.width - 135, y: 0);
 
     // top left
     path.moveTo(v1.x + radius, v1.y);
@@ -85,7 +115,6 @@ class CustomCardClipper extends CustomClipper<Path> {
 
     // deep cutout
     path.lineTo(v5.x + radius, v5.y);
-    // var v55 = pointAtDistance(v5, v6, radius);
     var v55 = pointAtDistance((x: v5.x, y: v5.y), (x: v6.x, y: v6.y), radius);
     path.quadraticBezierTo(v5.x, v5.y, v55.x, v55.y);
     path.lineTo(v55.x, v55.y);
@@ -105,12 +134,13 @@ class CustomCardClipper extends CustomClipper<Path> {
 
 class CardOutlinePainter extends CustomPainter {
   final double strokeWidth;
-  const CardOutlinePainter({required this.strokeWidth});
+  final Color? color;
+  const CardOutlinePainter({required this.strokeWidth, this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.black // Outline color
+      ..color = color ?? Colors.black // Outline color
       ..strokeWidth = strokeWidth // Outline thickness
       ..style = PaintingStyle.stroke; // Stroke only
 
