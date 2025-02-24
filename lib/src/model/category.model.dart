@@ -19,7 +19,7 @@ class Category {
     return Category(
       id: map['id'],
       name: map['name'],
-      amount: map['budget'],
+      amount: (map['amount'] as num).toDouble(),
       createdAt: map['created_at'],
     );
   }
