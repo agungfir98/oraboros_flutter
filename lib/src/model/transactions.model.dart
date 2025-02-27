@@ -44,18 +44,14 @@ class Transactions {
 
   factory Transactions.fromMap(Map<String, dynamic> map) {
     return Transactions(
-      id: map['id'],
-      type: TransactionType.values
-          .firstWhere((e) => e.name == map['type'] as String),
-      amount: (map['amount'] as num).toDouble(),
-      categoryId: map['category_id'],
-      category: map['category'],
-      description: map['description'],
-      createdAt: map['created_at'] != null
-          ? DateFormat("yyyy-MM-dd HH:mm:ss")
-              .parseUTC(map['created_at'])
-              .toLocal()
-          : null,
-    );
+        id: map['id'],
+        type: TransactionType.values.singleWhere((e) => e.name == map['type']),
+        amount: (map['amount'] as num).toDouble(),
+        categoryId: map['category_id'],
+        category: map['category'],
+        description: map['description'],
+        createdAt: DateFormat("yyyy-MM-dd HH:mm:ss")
+            .parseUTC(map['created_at'].toString())
+            .toLocal());
   }
 }
