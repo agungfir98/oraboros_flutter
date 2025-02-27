@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:oraboros/src/dashboard_feature/screens/budget/widgets/new_budget_sheet.dart';
 import 'package:oraboros/src/lib/locator.dart';
 import 'package:oraboros/src/model/category.model.dart';
@@ -61,7 +60,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
               width: 2, color: Theme.of(context).colorScheme.outline),
         ),
         title: const Text("budget"),
-        centerTitle: true,
         actions: [
           Container(
             height: double.infinity,
