@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:oraboros/src/dashboard_feature/screens/budget/budget_screen.dart';
+import 'package:oraboros/src/dashboard_feature/screens/history/history_screen.dart';
 import 'package:oraboros/src/dashboard_feature/screens/home/home_screen.dart';
 import 'package:oraboros/src/dashboard_feature/settings/settings_controller.dart';
 import 'package:oraboros/src/dashboard_feature/settings/settings_view.dart';
@@ -34,6 +35,14 @@ class _DashboardViewState extends State<DashboardView> {
           label: "Home",
         ),
         "widget": const HomeScreen()
+      },
+      {
+        "navItem": BottomNavigationBarItem(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          icon: const Icon(Icons.view_list_outlined),
+          label: "History",
+        ),
+        "widget": const HistoryScreen()
       },
       {
         "navItem": BottomNavigationBarItem(

@@ -6,6 +6,11 @@ class TAppTheme {
 
   static ThemeData lightTheme = ThemeData(
     textTheme: GoogleFonts.ibmPlexSansTextTheme(),
+    tabBarTheme: const TabBarTheme(
+      indicator: BoxDecoration(color: Colors.black),
+      labelStyle: TextStyle(fontWeight: FontWeight.w600),
+      labelColor: Colors.white,
+    ),
     colorScheme: const ColorScheme.light(
       primary: Color(0xff59FD39),
       secondary: Color(0xFF142e12),
