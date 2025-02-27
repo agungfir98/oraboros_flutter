@@ -1,4 +1,5 @@
 import "package:flutter/services.dart";
+import "package:oraboros/src/model/category.model.dart" as budget;
 import "package:path/path.dart";
 import "package:sqflite/sqflite.dart";
 
@@ -37,6 +38,10 @@ class DBHelper {
         await db.execute(query);
       }
     }
+
+    await db.insert("categories", budget.Category(amount: 0, name: "fnb").toMap());
+    await db.insert("categories", budget.Category(amount: 0, name: "household").toMap());
+    await db.insert("categories", budget.Category(amount: 0, name: "shopping").toMap());
   }
 
   Future<String> _loadSQL() async {
