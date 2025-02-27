@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -91,7 +90,7 @@ class _NewExpenseState extends State<NewExpense> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 50),
+        const SizedBox(height: 20),
         FormBuilder(
           key: _formKey,
           child: Column(

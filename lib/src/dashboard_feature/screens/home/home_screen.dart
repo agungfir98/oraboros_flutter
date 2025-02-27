@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:oraboros/src/dashboard_feature/screens/home/widgets/balance_card.dart';
-import 'package:oraboros/src/dashboard_feature/screens/home/widgets/new_expense_sheet.dart';
 import 'package:oraboros/src/dashboard_feature/screens/home/widgets/new_income_button.dart';
+import 'package:oraboros/src/dashboard_feature/screens/home/widgets/new_transaction_sheet.dart';
 import 'package:oraboros/src/dashboard_feature/screens/home/widgets/transaction_list.dart';
-import 'package:oraboros/src/widgets/bottom_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,9 +15,7 @@ class HomeScreen extends StatelessWidget {
       ),
       isScrollControlled: true,
       builder: (context) {
-        return const BottomeSheetWrapper(
-          sheet: NewExpense(),
-        );
+        return const TransactionSheet();
       },
     );
   }
