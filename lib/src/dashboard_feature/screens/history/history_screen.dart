@@ -40,6 +40,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return DefaultTabController(
       initialIndex: _tabIndex,
       length: _tabItems.length,
+      animationDuration: const Duration(milliseconds: 100),
       child: Scaffold(
         appBar: AppBar(
           shape: Border(
