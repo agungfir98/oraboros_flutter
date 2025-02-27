@@ -10,9 +10,6 @@ class TransactionService {
   TransactionService({required this.db});
 
   newIncome(double amount, String? description) async {
-    if (kDebugMode) {
-      print("kntl");
-    }
     Transactions payload = Transactions(
       type: TransactionType.income,
       amount: amount,
@@ -21,8 +18,16 @@ class TransactionService {
     await db.insert(table, payload.toMapInsert());
   }
 
-  Future<List<Transactions>> getTransactions() async {
+  Future<List<Transactions>> getTransactions({
+    int limit = 5,
+    int offset = 0,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     List<Transactions> transactionList = [];
+
+    startDate ??= DateTime.now().subtract(const Duration(days: 60));
+    endDate ??= DateTime.now();
 
     var result = await db.rawQuery('''
 SELECT 
@@ -34,9 +39,10 @@ SELECT
     transactions.created_at AS created_at
 FROM $table
 LEFT JOIN categories ON transactions.category_id = categories.id
+WHERE transactions.created_at BETWEEN ? AND ?
 ORDER BY created_at DESC
-LIMIT 5;
-''');
+LIMIT ? OFFSET ?;
+''', [startDate.toIso8601String(), endDate.toIso8601String(), limit, offset]);
 
     for (var transaction in result) {
       transactionList.add(Transactions.fromMap(transaction));
