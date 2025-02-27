@@ -109,9 +109,6 @@ class _DashboardViewState extends State<DashboardView> {
                   setState(() {
                     _currentIndex = index;
                   });
-                  if (kDebugMode) {
-                    print(index);
-                  }
                 },
                 items: sections
                     .map<BottomNavigationBarItem>(
