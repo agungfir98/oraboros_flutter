@@ -26,9 +26,6 @@ class _BalanceCardState extends State<BalanceCard> {
 
   _fetchBalance() async {
     var data = await transactionService.getBalance();
-    if (kDebugMode) {
-      print(data);
-    }
     setState(() {
       balance = data;
       isLoading = false;
@@ -66,7 +63,7 @@ class _BalanceCardState extends State<BalanceCard> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  formatting.format(balance['balance'] ?? ""),
+                  formatting.format(balance['balance'] ?? 0),
                   style: const TextStyle(
                       fontSize: 30, fontWeight: FontWeight.bold),
                 ),
