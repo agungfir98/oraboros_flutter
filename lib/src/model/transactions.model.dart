@@ -1,15 +1,16 @@
 import 'package:intl/intl.dart';
+import 'package:oraboros/src/lib/db/db_helper.dart';
 
 enum TransactionType { expense, income }
 
 class Transactions {
   final int? id;
-  final TransactionType type;
+  late TransactionType type;
   final double amount;
   final int? categoryId;
   final String? category;
   final String? description;
-  final DateTime? createdAt;
+  late DateTime? createdAt;
 
   Transactions({
     this.id,
@@ -34,12 +35,19 @@ class Transactions {
   }
 
   Map<String, dynamic> toMapInsert() {
-    return {
+    var map = {
       'type': type.name,
       'amount': amount,
       'category_id': categoryId,
       'description': description,
     };
+
+    if (createdAt != null) {
+      map['created_at'] =
+          DateFormat(sqliteDefaultDateFormat).format(createdAt!);
+    }
+
+    return map;
   }
 
   factory Transactions.fromMap(Map<String, dynamic> map) {
@@ -50,7 +58,7 @@ class Transactions {
         categoryId: map['category_id'],
         category: map['category'],
         description: map['description'],
-        createdAt: DateFormat("yyyy-MM-dd HH:mm:ss")
+        createdAt: DateFormat(sqliteDefaultDateFormat)
             .parseUTC(map['created_at'].toString())
             .toLocal());
   }
