@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:oraboros/src/model/transactions.model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -9,12 +8,8 @@ class TransactionService {
 
   TransactionService({required this.db});
 
-  newIncome(double amount, String? description) async {
-    Transactions payload = Transactions(
-      type: TransactionType.income,
-      amount: amount,
-      description: description,
-    );
+  newIncome(Transactions payload) async {
+    payload.type = TransactionType.income;
     await db.insert(table, payload.toMapInsert());
   }
 
