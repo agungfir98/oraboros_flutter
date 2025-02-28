@@ -3,6 +3,8 @@ import "package:oraboros/src/model/category.model.dart" as budget;
 import "package:path/path.dart";
 import "package:sqflite/sqflite.dart";
 
+String sqliteDefaultDateFormat = "yyyy-MM-dd HH:mm:ss";
+
 class DBHelper {
   // singleton pattern
   static final DBHelper _instance = DBHelper._internal();
@@ -39,9 +41,12 @@ class DBHelper {
       }
     }
 
-    await db.insert("categories", budget.Category(amount: 0, name: "fnb").toMap());
-    await db.insert("categories", budget.Category(amount: 0, name: "household").toMap());
-    await db.insert("categories", budget.Category(amount: 0, name: "shopping").toMap());
+    await db.insert(
+        "categories", budget.Category(amount: 0, name: "fnb").toMap());
+    await db.insert(
+        "categories", budget.Category(amount: 0, name: "household").toMap());
+    await db.insert(
+        "categories", budget.Category(amount: 0, name: "shopping").toMap());
   }
 
   Future<String> _loadSQL() async {
