@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
+import 'package:oraboros/src/lib/db/db_helper.dart';
 import 'package:oraboros/src/lib/locator.dart';
+import 'package:oraboros/src/model/transactions.model.dart';
 import 'package:oraboros/src/service/transaction.service.dart';
 import 'package:oraboros/src/utils/currency_formatter.dart';
 import 'package:oraboros/src/widgets/custom_gesture_detector.dart';
@@ -32,9 +34,16 @@ class _NewIncomeSheetState extends State<NewIncomeSheet> {
     final rawValue = formData?["value"]?.toString().replaceAll(',', '');
     final description = formData?["description"];
     final parsedValue = double.parse(rawValue!);
+    final createdAt = formData?['created_at'];
+
+    Transactions payload = Transactions(
+      amount: parsedValue,
+      createdAt: createdAt,
+      description: description,
+    );
 
     try {
-      await transactionService.newIncome(parsedValue, description);
+      await transactionService.newIncome(payload);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           CustomSnackBar(
@@ -132,12 +141,27 @@ class _NewIncomeSheetState extends State<NewIncomeSheet> {
                 ],
               ),
               const SizedBox(height: 20),
-              const Text("description"),
               FormBuilderTextField(
                 name: "description",
                 decoration: const InputDecoration(hintText: "description..."),
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
+              ),
+              const SizedBox(height: 10),
+              FormBuilderDateTimePicker(
+                name: 'created_at',
+                fieldHintText: 'Pick a date',
+                format: DateFormat(sqliteDefaultDateFormat),
+                inputType: InputType.both,
+                decoration: InputDecoration(
+                    hintText: "when did you buy? (default now)",
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          _formKey.currentState!.fields['created_at']
+                              ?.didChange(null);
+                        },
+                        icon: const Icon(Icons.clear_outlined))),
+                lastDate: DateTime.now(),
               ),
               const SizedBox(height: 50),
               SizedBox(

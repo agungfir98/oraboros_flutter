@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
+import 'package:oraboros/src/lib/db/db_helper.dart';
 import 'package:oraboros/src/lib/locator.dart';
 import 'package:oraboros/src/model/transactions.model.dart';
 import 'package:oraboros/src/model/category.model.dart' as budget;
@@ -52,11 +53,13 @@ class _NewExpenseState extends State<NewExpense> {
     final rawValue = formData?["value"]?.toString().replaceAll(',', '');
     final parsedValue = double.parse(rawValue!);
     final category = formData?['category'];
+    final createdAt = formData?['created_at'];
 
     Transactions payload = Transactions(
       amount: parsedValue,
       categoryId: category,
       description: description,
+      createdAt: createdAt,
     );
 
     try {
@@ -72,7 +75,7 @@ class _NewExpenseState extends State<NewExpense> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
         context: context,
-        type: SnackBarType.success,
+        type: SnackBarType.error,
         content: Text('failed to record expense: $e'),
       ));
     }
@@ -153,6 +156,21 @@ class _NewExpenseState extends State<NewExpense> {
                       ),
                     )
                     .toList(),
+              ),
+              FormBuilderDateTimePicker(
+                name: 'created_at',
+                fieldHintText: 'Pick a date',
+                format: DateFormat(sqliteDefaultDateFormat),
+                inputType: InputType.both,
+                decoration: InputDecoration(
+                    hintText: "when did you buy? (default now)",
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          _formKey.currentState!.fields['created_at']
+                              ?.didChange(null);
+                        },
+                        icon: const Icon(Icons.clear_outlined))),
+                lastDate: DateTime.now(),
               ),
               const SizedBox(height: 50),
               SizedBox(
