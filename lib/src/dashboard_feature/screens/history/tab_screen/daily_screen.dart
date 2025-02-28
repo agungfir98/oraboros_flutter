@@ -1,9 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'dart:ffi';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:oraboros/src/lib/locator.dart';
 import 'package:oraboros/src/model/transactions.model.dart';
 import 'package:oraboros/src/service/transaction.service.dart';
+import 'package:oraboros/src/utils/currency_formatter.dart';
 
 class DailyScreen extends StatefulWidget {
   const DailyScreen({super.key});
@@ -53,21 +56,41 @@ class _DailyScreenState extends State<DailyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      // padding: const EdgeInsets.symmetric(vertical: 30),
+    return ListView.separated(
       itemCount: dateList.length,
+      padding: EdgeInsets.zero,
       shrinkWrap: true,
       itemBuilder: (context, index) {
         String date = DateFormat("EEE dd MMM").format(dateList[index]);
-        return Container(
-          decoration: BoxDecoration(border: Border.all()),
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ListTile(
-                  leading: Builder(
+        double incomeSum = 0;
+        double expenseSum = 0;
+        if (_transactionHistory.containsKey(date)) {
+          incomeSum = _transactionHistory[date]!.fold(
+            incomeSum,
+            (sum, e) => e.type == TransactionType.income ? sum + e.amount : sum,
+          );
+          expenseSum = _transactionHistory[date]!.fold(
+            expenseSum,
+            (sum, e) =>
+                e.type == TransactionType.expense ? sum + e.amount : sum,
+          );
+        }
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.only(right: 10),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      right: BorderSide(
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Builder(
                     builder: (context) {
                       List<String> dateString = date.split(" ");
                       return Column(
@@ -85,29 +108,117 @@ class _DailyScreenState extends State<DailyScreen> {
                       );
                     },
                   ),
-                  title: Text(date.toString()),
                 ),
-                const Divider(
-                  thickness: 2,
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        formatting.format(incomeSum),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        formatting.format(expenseSum),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-                Builder(
-                  builder: (context) {
-                    if (_transactionHistory.containsKey(date)) {
-                      return Text(
-                          "ada ${_transactionHistory[date]?[0].description}");
-                    }
-
-                    return const Opacity(
-                      opacity: 0.8,
-                      child: Text("no transactions"),
+              ),
+              const Divider(
+                thickness: 1,
+              ),
+              Builder(
+                builder: (context) {
+                  if (_transactionHistory.containsKey(date)) {
+                    return ListView.separated(
+                      itemCount: _transactionHistory[date]!.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, i) {
+                        var item = _transactionHistory[date]![i];
+                        return ListTile(
+                          dense: true,
+                          leading: Opacity(
+                            opacity: 0.5,
+                            child: Text(
+                              DateFormat("HH:MM")
+                                  .format(item.createdAt!.toUtc()),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            item.description ?? "no description",
+                          ),
+                          subtitle: Opacity(
+                            opacity: 0.5,
+                            child: Text(
+                              item.category ?? item.type.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          trailing: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                size: 14,
+                                item.type == TransactionType.expense
+                                    ? Icons.remove_outlined
+                                    : Icons.add_outlined,
+                                // color: item.type == TransactionType.expense
+                                //     ? Colors.red[500]
+                                //     : Colors.green[500],
+                              ),
+                              Text(
+                                formatting.format(item.amount),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  // color: item.type == TransactionType.expense
+                                  //     ? Colors.red[500]
+                                  //     : Colors.green[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(
+                          thickness: 1,
+                          height: 1,
+                        ),
+                      ),
                     );
-                  },
-                )
-              ],
-            ),
+                  }
+
+                  return const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Opacity(
+                      opacity: 0.4,
+                      child: Center(child: Text("no records")),
+                    ),
+                  );
+                },
+              )
+            ],
           ),
         );
       },
+      separatorBuilder: (BuildContext context, int index) => const Divider(
+        thickness: 10,
+        height: 10,
+      ),
     );
   }
 }
